@@ -27,6 +27,9 @@
                     <button type="submit" class="btn btn-default">搜索</button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
+                    <li th:if="${session.user != null}">
+                        <a href="/publish">发布</a>
+                    </li>
                     <!--按照格式发送请求-->
                     <!--文档: https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/-->
                     <li th:if="${session.user == null}"><a href="https://github.com/login/oauth/authorize?client_id=13e4b09a28a73bffcf70&redirect_uri=http://localhost:8080/callback&scope=user&state=1">登录</a></li>
