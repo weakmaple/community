@@ -5,6 +5,7 @@ import com.majiang.community.dto.GithubUser;
 import com.majiang.community.mapper.UserMapper;
 import com.majiang.community.model.User;
 import com.majiang.community.provider.GithubProvider;
+import com.sun.deploy.net.HttpResponse;
 import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
@@ -33,7 +36,8 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
                            @RequestParam(name="state") String state,
-                            HttpServletRequest request) throws IOException {
+                           HttpServletRequest request,
+                           HttpServletResponse response) throws IOException {
         // 在html配置了返回请求的链接，会带上code和state参数
         // 读取配置文件
         Properties properties = PropertiesLoaderUtils.loadAllProperties("config/GithubSetting.properties");
@@ -52,14 +56,16 @@ public class AuthorizeController {
         if(githubUser != null){
             // 登录成功
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
 
             userMapper.insert(user);
-            request.getSession().setAttribute("user",githubUser);
+            //request.getSession().setAttribute("user",githubUser);
+            response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else{
             // 登录失败

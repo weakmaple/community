@@ -31,7 +31,7 @@ public class GithubProvider {
             String token = string.split("&")[0].split("=")[1];
             return token;
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println("getAccessToken "+e);
         }
         return null;
     }
@@ -49,7 +49,7 @@ public class GithubProvider {
             GithubUser githubUser = JSON.parseObject(string,GithubUser.class);
             return githubUser;
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println("getUser "+e);
         }
         return null ;
 
